@@ -1,0 +1,55 @@
+.plus-menu-wrapper {
+  position: relative;
+}
+
+.plus-btn {
+  width: 40px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--chart-axis);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  border: none;
+}
+
+.plus-btn:hover {
+  background-color: rgb(125, 108, 232);
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: 52px;
+  left: 0;
+  width: 180px;
+  background: #996b9e;
+  border-radius: 14px;
+  padding: px 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+
+.menu-item {
+  padding: 10px 32px;
+  color: #eaeaea;
+  cursor: pointer;
+  display: flex;
+  font-size: 15px;
+}
+
+.menu-item:hover {
+  background-color: #3a3a3a;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .menu-dropdown {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 300px;
+    z-index: 10000;
+  }
+}

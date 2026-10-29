@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ROOT VARIABLES - Default (Light Mode) */
+:root {
+    --bg-primary: #ffffff;
+    --bg-primary-rgb: 255, 255, 255;
+    --bg-secondary: #f4f6f8;
+    --bg-secondary-rgb: 244, 246, 248;
+    --bg-tertiary: #ffffff;
+    --bg-tertiary-rgb: 255, 255, 255;
+    --bg-hover: #f0f0f0;
+    --bg-active: #e6e6e6;
+    --bg-active-rgb: 230, 230, 230;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --border-color: #e0e0e0;
+    --accent-color: #4ade80;
+    --chart-grid: #e0e0e0;
+    --chart-axis: #888888;
+    --tooltip-bg: #ffffff;
+    --tooltip-color: #333;
+}
+
+/* DARK MODE OVERRIDES - Applied when body has .dark-mode class */
+body.dark-mode {
+    --bg-primary: #000000;
+    --bg-primary-rgb: 0, 0, 0;
+    --bg-secondary: #0a0a0a;
+    --bg-secondary-rgb: 10, 10, 10;
+    --bg-tertiary: #0a0a0a;
+    --bg-tertiary-rgb: 10, 10, 10;
+    --bg-hover: rgba(255, 255, 255, 0.05);
+    --bg-active: rgba(255, 255, 255, 0.1);
+    --bg-active-rgb: 255, 255, 255;
+    --text-primary: #ffffff;
+    --text-secondary: #888888;
+    --border-color: #1a1a1a;
+    --accent-color: #4ade80;
+    --chart-grid: #333333;
+    --chart-axis: #666666;
+    --tooltip-bg: #1a1a1a;
+    --tooltip-color: #fff;
+}
+
+/* Custom Adaptive Webkit Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-active);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+.recharts-responsive-container {
+    min-height: 0;
+}
+
+/* Global transparency for persistent particle background */
+.landing,
+.finbro-dashboard-container,
+.finbro-main,
+.config-page,
+.visualize-page,
+.smart-ai-container,
+.smart-ai-window,
+.smart-ai-sidebar,
+.smart-ai-main,
+.smart-ai-header {
+    background-color: transparent !important;
+}
+
+body {
+    background-color: var(--bg-primary);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism for standalone headers */
+.standalone-header {
+    background: rgba(var(--bg-primary-rgb), 0.7) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}

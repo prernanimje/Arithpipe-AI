@@ -1,0 +1,731 @@
+/* Smart AI Component Container */
+.smart-ai-container {
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+    z-index: 1000;
+}
+
+/* Hide floating toggle if a full-page chat is present anywhere on the body */
+body:has(.full-page) .floating-window,
+body:has(.full-page) .smart-ai-toggle {
+    display: none !important;
+}
+
+/* Hide scrollbars for AI section and window */
+.ai-chat-section-container,
+.smart-ai-window,
+.smart-ai-messages {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.ai-chat-section-container::-webkit-scrollbar,
+.smart-ai-window::-webkit-scrollbar,
+.smart-ai-messages::-webkit-scrollbar {
+    display: none;
+}
+
+/* Floating Mode */
+.smart-ai-container.floating-window {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 380px;
+    height: 600px;
+    z-index: 9999;
+}
+
+.smart-ai-container.floating-window .smart-ai-window {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    height: 100%;
+}
+
+/* Full Page Mode (ChatGPT Style) */
+.smart-ai-container.full-page {
+    width: 100%;
+    height: 114%;
+    position: relative;
+    background-color: #ffffff;
+    display: flex;
+    border-radius: 20px;
+    /* justify-content: center; */
+}
+
+.smart-ai-container.full-page .smart-ai-window {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    border: none;
+}
+
+.smart-ai-window {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Header */
+.smart-ai-header {
+    padding: 16px 20px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.smart-ai-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.sparkle-anim {
+    color: #ca3e9e;
+    animation: sparklePulse 2s infinite;
+}
+
+@keyframes sparklePulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+        color: #d41fda;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
+
+/* Messages Area */
+.smart-ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-welcome-banner {
+    text-align: center;
+    padding: 20px 20px;
+    color: #4b5563;
+}
+
+.chat-welcome-banner h2 {
+    font-size: 1.8rem;
+    margin: 20px 0 10px;
+    color: #111827;
+    font-weight: 700;
+}
+
+/* Message Bubbles */
+.smart-ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* Hide scrollbars but keep functionality */
+.smart-ai-messages::-webkit-scrollbar {
+    display: none;
+}
+
+.smart-ai-messages {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.smart-msg {
+    display: flex;
+    gap: 12px;
+    max-width: 85%;
+}
+
+.smart-msg.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.smart-msg.bot {
+    align-self: flex-start;
+}
+
+.bot-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ca3e9e, #d41fda);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(202, 62, 158, 0.3);
+}
+
+.smart-bubble {
+    padding: 14px 20px;
+    border-radius: 20px;
+    font-size: 15px;
+    line-height: 1.6;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+}
+
+.smart-bubble:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.user .smart-bubble {
+    background: #f3f4f6;
+    color: #1f2937;
+    border-top-right-radius: 4px;
+}
+
+.bot .smart-bubble {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    color: #374151;
+    border: 1px solid rgba(226, 232, 240, 0.5);
+    border-top-left-radius: 4px;
+}
+
+.full-page .bot .smart-bubble {
+    font-size: 16px;
+    width: 100%;
+}
+
+.bubble-text {
+    white-space: pre-wrap;
+}
+
+/* Input Area */
+.smart-input-container {
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* .full-page .smart-input-container {
+    padding: 24px 0 48px;
+} */
+
+.smart-input-wrapper {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.smart-input-wrapper:focus-within {
+    border-color: #ca3e9e;
+    box-shadow: 0 4px 25px rgba(202, 62, 158, 0.1);
+}
+
+.smart-textarea {
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 8px 0;
+    font-family: inherit;
+    font-size: 16px;
+    background: transparent;
+    max-height: 300px;
+    min-height: 24px;
+}
+
+.tool-btn {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.tool-btn:hover {
+    color: #ca3e9e;
+    background: #fdf2f8;
+}
+
+.send-btn {
+    background: #f3f4f6;
+    color: #9ca3af;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.send-btn.active {
+    background: #000;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.input-footer {
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+/* Animations */
+.ai-pulse-icon {
+    animation: iconPulse 2s infinite;
+}
+
+@keyframes iconPulse {
+    0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px rgba(202, 62, 158, 0));
+    }
+
+    50% {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 8px rgba(202, 62, 158, 0.4));
+    }
+
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px rgba(202, 62, 158, 0));
+    }
+}
+
+.typing-dots {
+    display: flex;
+    gap: 4px;
+    padding: 8px 0;
+}
+
+.typing-dots span {
+    width: 7px;
+    height: 7px;
+    background: #ca3e9e;
+    border-radius: 50%;
+    animation: dotAnim 1.4s infinite;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes dotAnim {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+.file-preview-pill {
+    background: #fdf2f8;
+    color: #be185d;
+    padding: 8px 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    align-self: flex-start;
+    border: 1px solid #fbcfe8;
+}
+
+.smart-ai-toggle {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ca3e9e, #d41fda);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(202, 62, 158, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.smart-ai-toggle:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.smart-ai-toggle.header-variant {
+    width: 36px;
+    height: 36px;
+    box-shadow: 0 4px 12px rgba(202, 62, 158, 0.2);
+    margin-right: 12px;
+}
+
+.smart-ai-toggle.header-variant svg {
+    width: 18px;
+    height: 18px;
+}
+
+.inline-chart {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 16px;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.smart-timestamp {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 6px;
+}
+
+/* Dark Mode Integration */
+body.dark-mode .smart-ai-container.full-page {
+    background-color: #0d0d0d;
+}
+
+body.dark-mode .smart-ai-window {
+    background: transparent;
+    border: none;
+}
+
+body.dark-mode .smart-ai-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+body.dark-mode .smart-ai-title {
+    color: #ffffff;
+}
+
+body.dark-mode .chat-welcome-banner h2 {
+    color: #ffffff;
+}
+
+body.dark-mode .chat-welcome-banner p {
+    color: #a0aec0;
+}
+
+body.dark-mode .smart-bubble {
+    box-shadow: none;
+}
+
+body.dark-mode .user .smart-bubble {
+    background: #262626;
+    color: #ececec;
+}
+
+body.dark-mode .bot .smart-bubble {
+    background: rgba(38, 38, 38, 0.4);
+    backdrop-filter: blur(12px);
+    color: #ececec;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-top-left-radius: 4px;
+}
+
+body.dark-mode .smart-input-wrapper {
+    background: #212121;
+    border-color: #333;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .smart-textarea {
+    color: #ffffff;
+}
+
+body.dark-mode .send-btn {
+    background: #333;
+    color: #777;
+}
+
+body.dark-mode .send-btn.active {
+    background: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode .tool-btn {
+    color: #a0aec0;
+}
+
+body.dark-mode .inline-chart {
+    background: #1a1a1a;
+    border-color: #333;
+}
+
+body.dark-mode .input-footer {
+    color: #718096;
+}
+
+/* Smart AI Layout with Sidebar */
+.smart-ai-layout {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Sidebar Styles */
+.smart-ai-sidebar {
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: width 0.3s ease;
+    z-index: 50;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    height: 100%;
+    border-radius: 20px;
+}
+
+.smart-ai-sidebar.collapsed {
+    width: 0;
+    padding: 0;
+    overflow: hidden;
+    border: none;
+}
+
+body.dark-mode .smart-ai-sidebar {
+    background-color: rgba(33, 33, 33, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-header {
+    margin-bottom: 20px;
+}
+
+.new-chat-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.new-chat-btn:hover {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.sidebar-history {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.history-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #a0aec0;
+    margin-bottom: 8px;
+    padding-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #4b5563;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: transparent;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-item:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.history-item.active {
+    background: #fce7f3;
+    color: #be185d;
+    font-weight: 500;
+}
+
+.history-item span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Main Content Area */
+.smart-ai-main {
+    flex: initial;
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    background: #fff;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+/* Toggle Sidebar Button (Mobile/Desktop) */
+.sidebar-toggle-btn {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 10;
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: left 0.3s ease, background 0.2s;
+    left: 16px;
+}
+
+.smart-ai-sidebar:not(.collapsed)+.sidebar-toggle-btn {
+    left: 276px;
+}
+
+.sidebar-toggle-btn:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+/* Dark Mode Integration for Sidebar */
+body.dark-mode .smart-ai-sidebar {
+    background-color: rgba(33, 33, 33, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .new-chat-btn {
+    background: #262626;
+    border-color: #404040;
+    color: #e5e5e5;
+}
+
+body.dark-mode .new-chat-btn:hover {
+    background: #333;
+    color: #fff;
+}
+
+body.dark-mode .history-item {
+    color: #a3a3a3;
+}
+
+body.dark-mode .history-item:hover {
+    background: #262626;
+    color: #fff;
+}
+
+body.dark-mode .history-item.active {
+    background: #3f1d32;
+    color: #f472b6;
+}
+
+body.dark-mode .smart-ai-main {
+    background: transparent;
+
+}
+
+body.dark-mode .sidebar-toggle-btn {
+    color: #a3a3a3;
+}
+
+body.dark-mode .sidebar-toggle-btn:hover {
+    background: #262626;
+    color: #fff;
+}
+
+/* Empty State Modifications - Center Banner & Input */
+.smart-ai-window.empty-state {
+    justify-content: center !important;
+    gap: 0;
+}
+
+.smart-ai-window.empty-state .smart-ai-messages {
+    flex: 0 0 auto !important;
+    /* Stop growing, sit in center */
+    padding-bottom: 0 !important;
+    overflow: visible;
+}
+
+.smart-ai-window.empty-state .chat-welcome-banner {
+    padding-bottom: 24px;
+    /* Small space */
+    margin-bottom: 0;
+}
+
+.smart-ai-window.empty-state .chat-welcome-banner h2 {
+    margin-bottom: 8px;
+}
+
+.smart-ai-window.empty-state .chat-welcome-banner p {
+    margin-bottom: 0;
+}
+
+.smart-ai-window.empty-state .smart-input-container {
+    padding-top: 0 !important;
+    flex: 0 0 auto;
+}

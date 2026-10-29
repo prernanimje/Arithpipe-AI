@@ -1,0 +1,7 @@
+[
+  { "label": "January", "value": 120 },
+  { "label": "February", "value": 90 },
+  { "label": "March", "value": 150 },
+  { "label": "April", "value": null },
+  { "label": "May", "value": 200 }
+]

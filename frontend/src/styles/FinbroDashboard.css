@@ -1,0 +1,740 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* FinbroDashboard.css */
+
+/* CSS Variables moved to index.css for global scope */
+
+/* Scoped to .finbro-dashboard-container */
+.finbro-dashboard-container {
+    background-color: transparent;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Reset for this container */
+.finbro-dashboard-container * {
+    box-sizing: border-box;
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.4s ease;
+}
+
+/* Sidebar */
+.finbro-sidebar {
+    width: 250px;
+    background-color: black;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border-color);
+    flex-shrink: 0;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+    overflow: visible;
+    z-index: 1100;
+    white-space: nowrap;
+    color: white;
+    border-radius: 20px;
+    margin-left: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.finbro-sidebar.collapsed {
+    width: 80px;
+    padding: 2rem 1rem;
+}
+
+.finbro-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 3rem;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 40px;
+}
+
+.collapsed .finbro-logo {
+    font-size: 1.2rem;
+}
+
+.finbro-nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.finbro-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.collapsed .finbro-nav-item {
+    justify-content: center;
+    padding: 0.75rem 0;
+}
+
+.collapsed .finbro-nav-item span:not(.sidebar-icon-wrapper) {
+    display: none;
+}
+
+.finbro-nav-item:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-hover);
+}
+
+.finbro-nav-item.active {
+    color: var(--text-primary);
+    background-color: var(--bg-active);
+}
+
+.finbro-nav-item svg {
+    width: 18px;
+    height: 18px;
+}
+
+.sidebar-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.sidebar-icon-wrapper:hover {
+    background-color: var(--bg-hover);
+}
+
+.finbro-nav-group-bottom {
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+/* Main Content Area */
+.finbro-main {
+    flex: 1;
+    padding: 1rem;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow-y: auto;
+    height: 100vh;
+    justify-content: center;
+}
+
+/* Header Avatar + Theme Toggle */
+.finbro-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    width: 100%;
+}
+
+.finbro-theme-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.finbro-theme-btn:hover {
+    background-color: var(--bg-hover);
+}
+
+.finbro-avatar-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #78176b, #ca3e9e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    border: none;
+    font-size: 1.1rem;
+}
+
+.sidebar-avatar-logo {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #78176b, #ca3e9e);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(120, 23, 107, 0.3);
+}
+
+.collapsed .sidebar-avatar-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+}
+
+/* Dropdown Menu */
+.finbro-dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 280px;
+    background-color: var(--bg-secondary);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    color: var(--text-primary);
+}
+
+.finbro-dropdown-menu.sidebar-dropdown {
+    top: auto;
+    bottom: 0;
+    left: calc(100% + 15px);
+    right: auto;
+}
+
+.collapsed .finbro-dropdown-menu.sidebar-dropdown {
+    left: calc(100% + 5px);
+}
+
+body.dark-mode .finbro-dropdown-menu {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    background-color: rgba(10, 10, 10, 0.8) !important;
+}
+
+.finbro-dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 0.5rem;
+}
+
+.finbro-dropdown-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #78176b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+}
+
+.finbro-user-info p {
+    margin: 0;
+}
+
+.finbro-user-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.finbro-user-email {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.finbro-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+    text-align: left;
+}
+
+.finbro-dropdown-item:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+/* Dashboard Grid Layout */
+.finbro-dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1.5fr 0.85fr;
+    grid-template-rows: 1.2fr 0.9fr 0.9fr;
+    /* Proportional rows to fill height */
+    gap: 15px;
+    width: 100%;
+    height: calc(100vh - 2rem);
+    /* Fill height completely */
+    margin-bottom: 0;
+}
+
+.finbro-card {
+    background-color: rgba(var(--bg-active-rgb), 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    height: 100%;
+    /* Fill grid cell */
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.4s ease,
+        border-color 0.4s ease;
+}
+
+.finbro-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    border-color: var(--accent-color);
+    z-index: 2;
+}
+
+/* Specific Card Layouts */
+/* Specific Card Layouts - Remove min-heights */
+.item-sales-analytics {
+    grid-column: span 2;
+}
+
+.item-total-customers {
+    grid-column: span 1;
+}
+
+.item-top-sales {
+    grid-column: span 1;
+}
+
+.item-last-activity {
+    grid-column: span 1;
+}
+
+.item-total-revenue {
+    grid-column: span 1;
+    background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+    color: white;
+    border: none;
+}
+
+.item-product-sales {
+    grid-column: span 2;
+}
+
+.item-total-orders {
+    grid-column: span 1;
+    background: #fff0f0;
+    border: none;
+}
+
+/* Dark mode specific overrides for cards */
+body.dark-mode .item-total-orders {
+    background: #2a2a2a;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .finbro-dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .item-sales-analytics {
+        grid-column: span 2;
+    }
+
+    .item-product-sales {
+        grid-column: span 2;
+    }
+
+    .item-total-customers,
+    .item-top-sales,
+    .item-last-activity,
+    .item-total-revenue,
+    .item-total-orders {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .finbro-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .item-sales-analytics,
+    .item-product-sales,
+    .item-total-customers,
+    .item-top-sales,
+    .item-last-activity,
+    .item-total-revenue,
+    .item-total-orders {
+        grid-column: span 1;
+    }
+}
+
+
+/* Common Card Elements */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    /* Reduced margin */
+    flex-shrink: 0;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.card-subtitle {
+    font-size: 0.85rem;
+    color: inherit;
+    opacity: 0.7;
+}
+
+/* Stat Text */
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0.5rem 0;
+}
+
+.stat-trend {
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.trend-up {
+    color: #4ade80;
+}
+
+.trend-down {
+    color: #ef4444;
+}
+
+/* Table Styles */
+.sales-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.sales-table th {
+    text-align: left;
+    padding: 0.8rem 0;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sales-table td {
+    padding: 1rem 0;
+    font-size: 0.95rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.item-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.item-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-hover);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Activity List */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.activity-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.activity-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.activity-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    overflow: hidden;
+}
+
+.activity-info h4 {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.activity-info p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Chart Header */
+.finbro-chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.finbro-chart-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.finbro-tag {
+    background-color: var(--bg-active);
+    color: var(--accent-color);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.finbro-chart-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.finbro-timeframe {
+    background-color: var(--bg-active);
+    border-radius: 8px;
+    padding: 0.2rem;
+    display: flex;
+}
+
+.finbro-tf-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.finbro-tf-btn.active {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .finbro-tf-btn.active {
+    background-color: #2a2a2a;
+    box-shadow: none;
+}
+
+.finbro-icon-btn {
+    background-color: var(--bg-active);
+    border: none;
+    color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.finbro-icon-btn:hover {
+    background-color: #d0d1dc;
+    color: black;
+}
+
+/* Sidebar Dark Mode Overrides */
+body.dark-mode .finbro-sidebar {
+    background-color: #d0d1dc;
+    color: black;
+    border-right: 1px solid #eaeaea;
+}
+
+body.dark-mode .finbro-logo {
+    color: black;
+}
+
+body.dark-mode .finbro-nav-item {
+    color: #333;
+    /* Dark gray for unselected but strictly legible */
+}
+
+body.dark-mode .finbro-nav-item:hover {
+    background-color: #f5f5dc;
+    /* beige */
+    color: black;
+}
+
+body.dark-mode .finbro-nav-item.active {
+    background-color: #f5eedc;
+    /* slightly deeper beige for active */
+    color: black;
+}
+
+body.dark-mode .sidebar-icon-wrapper:hover {
+    background-color: transparent;
+    /* allow the nav item to control hover background */
+}
+
+/* New Animations */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(125, 108, 232, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(125, 108, 232, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(125, 108, 232, 0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.shimmer-effect {
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.05) 50%,
+            rgba(255, 255, 255, 0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+.finbro-nav-item:active {
+    transform: scale(0.95);
+}
+
+.sidebar-icon-wrapper svg {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.finbro-nav-item:hover .sidebar-icon-wrapper svg {
+    transform: scale(1.2) rotate(5deg);
+}
+
+/* Custom Scrollbar for premium feel */
+.finbro-main::-webkit-scrollbar {
+    width: 6px;
+}
+
+.finbro-main::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.finbro-main::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+
+.finbro-main::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
