@@ -27,10 +27,7 @@ def on_startup():
 # Health check endpoints for deployment platforms (Vercel, Render, Railway, Fly, AWS)
 @app.get("/")
 @app.get("/health")
-@app.get("/api")
 @app.get("/api/health")
-@app.get("/api/index")
-@app.get("/api/index.py")
 def health_check():
     return {"status": "ok", "app": "AI-Arithpipe API", "version": "1.0.0"}
 
