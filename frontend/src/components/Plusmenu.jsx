@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import "../styles/plusmenu.css";
+import "../styles/Plusmenu.css";
 
 const PlusMenu = ({ onFileSelect }) => {
   const [open, setOpen] = useState(false);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/FinbroDashboard.css';
-import '../styles/plusmenu.css'; // Ensure plusmenu styles are available if we use similar class names
+import '../styles/Plusmenu.css'; // Ensure plusmenu styles are available if we use similar class names
 import { useTheme } from '../context/ThemeContext';
 import { API_BASE } from '../api/config';
 import Visualization from '../pages/visuaize.jsx';

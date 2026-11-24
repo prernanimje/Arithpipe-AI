@@ -35,7 +35,7 @@ import {
 import { Download, FileText, FileSpreadsheet, Check, ChevronLeft, Moon, Sun, Sparkles, Activity } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../context/ThemeContext";
-import "../styles/chartConfig.css";
+import "../styles/ChartConfig.css";
 
 const NEON_PALETTE = ['#4361ee', '#f72585', '#7209b7', '#4cc9f0', '#f8961e', '#3a0ca3'];
 
