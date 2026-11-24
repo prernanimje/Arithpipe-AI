@@ -183,10 +183,10 @@ const StockMarketSlider = ({ style, className = "" }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [stocks, setStocks] = useState([
-    { name: "Apple", price: "...", change: "+0.0%", data: [{ v: 0 }] },
-    { name: "BTC", price: "...", change: "+0.0%", data: [{ v: 0 }] },
-    { name: "Tesla", price: "...", change: "+0.0%", data: [{ v: 0 }] },
-    { name: "Google", price: "...", change: "+0.0%", data: [{ v: 0 }] }
+    { name: "Apple", price: "353.05", change: "+1.17%", data: [{ v: 349 }, { v: 351 }, { v: 353.05 }] },
+    { name: "BTC", price: "60,031.73", change: "-1.93%", data: [{ v: 61200 }, { v: 60500 }, { v: 60031.73 }] },
+    { name: "Tesla", price: "383.23", change: "-0.58%", data: [{ v: 385 }, { v: 382 }, { v: 383.23 }] },
+    { name: "Google", price: "278.71", change: "-1.20%", data: [{ v: 282 }, { v: 280 }, { v: 278.71 }] }
   ]);
 
   const fetchLiveStockData = async () => {
@@ -196,12 +196,11 @@ const StockMarketSlider = ({ style, className = "" }) => {
         const data = await res.json();
         const formatted = data.map(item => ({
           name: item.symbol === 'BTC-USD' ? 'BTC' : (item.symbol === 'AAPL' ? 'Apple' : (item.symbol === 'TSLA' ? 'Tesla' : 'Google')),
-          price: typeof item.price === 'number' ? item.price.toFixed(2) : item.price,
+          price: typeof item.price === 'number' ? item.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : item.price,
           change: (item.changePercent >= 0 ? "+" : "") + (typeof item.changePercent === 'number' ? item.changePercent.toFixed(2) : 0) + "%",
           data: item.data && item.data.length > 0 ? item.data.map(p => ({ v: p })) : [{ v: item.price }]
         }));
         if (formatted.length > 0) {
-          // keep the same order as much as possible, or just replace
           setStocks(formatted);
         }
       }
@@ -212,7 +211,7 @@ const StockMarketSlider = ({ style, className = "" }) => {
 
   useEffect(() => {
     fetchLiveStockData();
-    const pollInterval = setInterval(fetchLiveStockData, 30000); // 30s
+    const pollInterval = setInterval(fetchLiveStockData, 12000); // 12s live tick
     return () => clearInterval(pollInterval);
   }, []);
 
@@ -394,11 +393,11 @@ const WeatherWidget = () => {
 
 const LiveStockTable = () => {
   const initialStocks = [
-    { symbol: "AAPL", name: "Apple Inc.", oldPrice: 0, newPrice: 0, change: "+0.00%" },
-    { symbol: "TSLA", name: "Tesla Inc.", oldPrice: 0, newPrice: 0, change: "+0.00%" },
-    { symbol: "GOOGL", name: "Alphabet Inc.", oldPrice: 0, newPrice: 0, change: "+0.00%" },
-    { symbol: "MSFT", name: "Microsoft", oldPrice: 0, newPrice: 0, change: "+0.00%" },
-    { symbol: "AMZN", name: "Amazon", oldPrice: 0, newPrice: 0, change: "+0.00%" },
+    { symbol: "AAPL", name: "Apple Inc.", oldPrice: 349.08, newPrice: 353.05, change: "+1.17%" },
+    { symbol: "TSLA", name: "Tesla Inc.", oldPrice: 385.46, newPrice: 383.23, change: "-0.58%" },
+    { symbol: "GOOGL", name: "Alphabet Inc.", oldPrice: 282.10, newPrice: 278.71, change: "-1.20%" },
+    { symbol: "MSFT", name: "Microsoft Corp.", oldPrice: 492.50, newPrice: 496.55, change: "+0.82%" },
+    { symbol: "AMZN", name: "Amazon.com Inc.", oldPrice: 255.39, newPrice: 252.17, change: "-1.26%" },
   ];
 
   const [stocks, setStocks] = useState(initialStocks);
@@ -409,13 +408,17 @@ const LiveStockTable = () => {
       if (res.ok) {
         const data = await res.json();
         const formatted = data.map(item => {
-          const nameMap = { AAPL: "Apple Inc.", TSLA: "Tesla Inc.", GOOGL: "Alphabet Inc.", MSFT: "Microsoft", AMZN: "Amazon" };
+          const nameMap = { AAPL: "Apple Inc.", TSLA: "Tesla Inc.", GOOGL: "Alphabet Inc.", MSFT: "Microsoft Corp.", AMZN: "Amazon.com Inc." };
+          const p = Number(item.price) || 0;
+          const chg = Number(item.change) || 0;
+          const oldP = p - chg;
+          const pct = Number(item.changePercent) || 0;
           return {
             symbol: item.symbol,
-            name: nameMap[item.symbol] || item.symbol,
-            oldPrice: item.price - item.change,
-            newPrice: item.price,
-            change: (item.changePercent >= 0 ? "+" : "") + (typeof item.changePercent === 'number' ? item.changePercent.toFixed(2) : 0) + "%"
+            name: item.name || nameMap[item.symbol] || item.symbol,
+            oldPrice: oldP,
+            newPrice: p,
+            change: (pct >= 0 ? "+" : "") + pct.toFixed(2) + "%"
           };
         });
         if (formatted.length > 0) setStocks(formatted);
@@ -427,7 +430,7 @@ const LiveStockTable = () => {
 
   useEffect(() => {
     fetchLiveStockTableData();
-    const pollInterval = setInterval(fetchLiveStockTableData, 30000); // 30s live tick
+    const pollInterval = setInterval(fetchLiveStockTableData, 12000); // 12s live tick
     return () => clearInterval(pollInterval);
   }, []);
 
@@ -454,6 +457,8 @@ const LiveStockTable = () => {
           <tbody>
             {stocks.map((item, i) => {
               const isPositive = item.change.startsWith('+');
+              const formattedOld = typeof item.oldPrice === 'number' ? item.oldPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : item.oldPrice;
+              const formattedNew = typeof item.newPrice === 'number' ? item.newPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : item.newPrice;
               return (
                 <tr key={i}>
                   <td>
@@ -462,8 +467,8 @@ const LiveStockTable = () => {
                     </div>
                   </td>
                   <td style={{ fontWeight: 500 }}>{item.name}</td>
-                  <td style={{ color: 'var(--text-secondary)' }}>${item.oldPrice.toFixed(2)}</td>
-                  <td style={{ fontWeight: 700 }}>${item.newPrice.toFixed(2)}</td>
+                  <td style={{ color: 'var(--text-secondary)' }}>${formattedOld}</td>
+                  <td style={{ fontWeight: 700 }}>${formattedNew}</td>
                   <td style={{ color: isPositive ? '#4ade80' : '#ef4444', fontWeight: 600 }}>
                     {item.change}
                   </td>
