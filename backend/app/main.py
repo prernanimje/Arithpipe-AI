@@ -24,9 +24,13 @@ def on_startup():
     except Exception as e:
         print(f"Startup notice: {e}")
 
-# Health check endpoints for deployment platforms (Render, Railway, Fly, AWS)
+# Health check endpoints for deployment platforms (Vercel, Render, Railway, Fly, AWS)
 @app.get("/")
 @app.get("/health")
+@app.get("/api")
+@app.get("/api/health")
+@app.get("/api/index")
+@app.get("/api/index.py")
 def health_check():
     return {"status": "ok", "app": "AI-Arithpipe API", "version": "1.0.0"}
 
@@ -69,11 +73,15 @@ class ChatRequest(BaseModel):
     user_id: Optional[int] = None
     session_id: Optional[str] = None
 
-# ROUTES
+# ROUTES - support both with and without /api prefix for seamless Vercel routing
 app.include_router(auth_router)
+app.include_router(auth_router, prefix="/api")
 app.include_router(ask_router)
+app.include_router(ask_router, prefix="/api")
 app.include_router(upload_router)
+app.include_router(upload_router, prefix="/api")
 app.include_router(chat_router)
+app.include_router(chat_router, prefix="/api")
 app.include_router(stock_router)
 
 from starlette.concurrency import run_in_threadpool
@@ -110,6 +118,7 @@ async def generate_with_fallback(client, contents):
     raise RuntimeError("All Gemini models failed to generate content.")
 
 @app.post("/chat")
+@app.post("/api/chat")
 async def chat_with_ai(request: ChatRequest):
     if not request.message.strip():
         return {"reply": "I'm here! How can I help you with your data analysis today?"}
