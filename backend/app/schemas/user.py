@@ -1,4 +1,10 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
+
+try:
+    import email_validator
+    from pydantic import EmailStr
+except (ImportError, Exception):
+    EmailStr = str
 
 class SignupSchema(BaseModel):
     name: str

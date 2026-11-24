@@ -8,3 +8,5 @@ google-genai
 python-multipart
 openpyxl
 pandas
+email-validator
+pydantic[email]
