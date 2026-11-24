@@ -27,8 +27,13 @@ def signup(user: SignupSchema):
     if not password or len(password) < 4:
         raise HTTPException(status_code=400, detail="Password must be at least 4 characters long")
 
-    conn = get_connection()
-    cur = conn.cursor()
+    conn = None
+    cur = None
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Database connection error: {str(e)}")
 
     try:
         hashed_pwd = hash_password(password)
@@ -62,8 +67,13 @@ def login(user: LoginSchema):
     email = user.email.lower().strip()
     password = user.password
 
-    conn = get_connection()
-    cur = conn.cursor()
+    conn = None
+    cur = None
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Database connection error: {str(e)}")
 
     try:
         cur.execute(
@@ -153,8 +163,13 @@ def login(user: LoginSchema):
 
 @router.get("/auth/history/{user_id}")
 def get_user_login_history(user_id: int):
-    conn = get_connection()
-    cur = conn.cursor()
+    conn = None
+    cur = None
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Database connection error: {str(e)}")
     try:
         cur.execute(
             """

@@ -19,7 +19,10 @@ app = FastAPI(title="AI-Arithpipe API", version="1.0.0")
 # Startup database initialization
 @app.on_event("startup")
 def on_startup():
-    init_all_tables()
+    try:
+        init_all_tables()
+    except Exception as e:
+        print(f"Startup notice: {e}")
 
 # Health check endpoints for deployment platforms (Render, Railway, Fly, AWS)
 @app.get("/")

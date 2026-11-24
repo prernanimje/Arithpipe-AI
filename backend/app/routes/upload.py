@@ -6,10 +6,15 @@ from app.db.database import get_connection
 import os
 from openpyxl import load_workbook
 
+import tempfile
+
 router = APIRouter()
 
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+UPLOAD_DIR = os.path.join(tempfile.gettempdir(), "uploads")
+try:
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+except Exception:
+    pass
 
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
