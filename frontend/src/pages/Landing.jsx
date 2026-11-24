@@ -4,10 +4,11 @@ import { motion } from "framer-motion";
 import PlusMenu from "../components/Plusmenu";
 import Login from "../components/Login";
 import SignUp from "../components/SignUp";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { Moon, Sun, Sparkles } from "lucide-react";
 import FinbroDashboard from "./FinbroDashboard";
+import { API_BASE } from "../api/config";
 
 const Landing = ({ hideNavbar = false }) => {
   const [query, setQuery] = useState("");
@@ -17,6 +18,45 @@ const Landing = ({ hideNavbar = false }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const { isDarkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // On default page visit: do NOT auto-login from old stale localStorage.
+  // Check active session storage so fresh visitors always see "Log in" and "Sign up".
+  const [user, setUser] = useState(() => {
+    try {
+      const sessionUser = sessionStorage.getItem("user");
+      if (sessionUser) {
+        return JSON.parse(sessionUser);
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  });
+
+  const handleAuthSuccess = (userData) => {
+    setUser(userData);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("user");
+    setUser(null);
+  };
+
+  // Re-sync user state on navigation/redirect so logout from any page immediately reflects
+  React.useEffect(() => {
+    try {
+      const sessionUser = sessionStorage.getItem("user");
+      if (sessionUser) {
+        setUser(JSON.parse(sessionUser));
+      } else {
+        setUser(null);
+      }
+    } catch {
+      setUser(null);
+    }
+  }, [location]);
 
   const handleSubmit = async () => {
     if (!selectedFile) {
@@ -30,7 +70,7 @@ const Landing = ({ hideNavbar = false }) => {
     formData.append("file", selectedFile);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/upload", {
+      const res = await fetch(`${API_BASE}/upload`, {
         method: "POST",
         body: formData,
       });
@@ -62,8 +102,9 @@ const Landing = ({ hideNavbar = false }) => {
     }
   };
 
-  // Check for user
-  const user = localStorage.getItem("user");
+  const isFirstTimeNotice = Boolean(
+    user && (user.is_first_login || location.state?.firstLogin)
+  );
 
   return (
     <div className="landing" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -78,9 +119,12 @@ const Landing = ({ hideNavbar = false }) => {
         zIndex: -1,
         pointerEvents: 'none'
       }}></div>
+
       {!hideNavbar && (
         <motion.nav className="navbar">
-          <motion.h2 className="logo">Arithpipe</motion.h2>
+          <motion.h2 className="logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
+            AI-Arithpipe
+          </motion.h2>
 
           <div className="auth-buttons">
             <button
@@ -128,8 +172,24 @@ const Landing = ({ hideNavbar = false }) => {
                 </button>
               </>
             ) : (
-              <div style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
-                Welcome back!
+              <div className="user-nav-group">
+                <span className="welcome-username">
+                  Welcome, {user.name || "User"}!
+                </span>
+                <button
+                  className="login-btn"
+                  onClick={() => navigate("/finbro-dashboard")}
+                  title="Go to Dashboard"
+                >
+                  Dashboard
+                </button>
+                <button
+                  className="login-btn signin-btn"
+                  onClick={handleLogout}
+                  title="Log out"
+                >
+                  Log out
+                </button>
               </div>
             )}
           </div>
@@ -143,12 +203,31 @@ const Landing = ({ hideNavbar = false }) => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
+          {isFirstTimeNotice && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{
+                marginBottom: '1.25rem',
+                padding: '0.75rem 1.25rem',
+                borderRadius: '8px',
+                background: 'rgba(125, 108, 232, 0.25)',
+                border: '1px solid rgba(125, 108, 232, 0.5)',
+                color: 'var(--text-primary)',
+                fontSize: '0.95rem',
+                textAlign: 'center'
+              }}
+            >
+              🎉 Welcome, {user.name || "User"}! Please upload your data file (CSV, Excel, or JSON) to start visualizing.
+            </motion.div>
+          )}
+
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            Build Your Own Visualization pipelines with Arithpipe AI
+            Build Your Own Visualization pipelines with AI-Arithpipe
           </motion.p>
 
           <motion.div
@@ -180,9 +259,15 @@ const Landing = ({ hideNavbar = false }) => {
 
       {showLogin &&
         (loginMode === "signup" ? (
-          <SignUp onClose={() => setShowLogin(false)} />
+          <SignUp
+            onClose={() => setShowLogin(false)}
+            onSuccess={handleAuthSuccess}
+          />
         ) : (
-          <Login onClose={() => setShowLogin(false)} />
+          <Login
+            onClose={() => setShowLogin(false)}
+            onSuccess={handleAuthSuccess}
+          />
         ))}
     </div>
   );

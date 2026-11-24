@@ -4,8 +4,7 @@ import "../styles/Landing.css";
 import { API_BASE } from "../api/config";
 import { useNavigate } from "react-router-dom";
 
-
-const SignUp = ({ onClose }) => {
+const SignUp = ({ onClose, onSuccess }) => {
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
@@ -32,9 +31,12 @@ const SignUp = ({ onClose }) => {
         setError(data.detail || "Signup failed");
       } else {
         localStorage.setItem("user", JSON.stringify(data));
+        sessionStorage.setItem("user", JSON.stringify(data));
+        if (onSuccess) {
+          onSuccess(data);
+        }
         onClose();
-        navigate("/finbro-dashboard");
-
+        navigate("/", { state: { firstLogin: true } });
       }
     } catch {
       setError("Network error");
@@ -53,7 +55,7 @@ const SignUp = ({ onClose }) => {
           ×
         </button>
 
-        <h3>Sign up</h3>
+        <h3>Sign up for AI-Arithpipe</h3>
 
         <form onSubmit={handleSubmit}>
           <label>Name
@@ -67,7 +69,6 @@ const SignUp = ({ onClose }) => {
           </label>
           <label>
             Email
-
             <input
               type="email"
               placeholder="Email"
@@ -76,7 +77,7 @@ const SignUp = ({ onClose }) => {
               required
             />
           </label>
-          <label >
+          <label>
             Password
             <input
               type="password"

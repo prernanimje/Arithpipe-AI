@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c0e1a"/>
+      <stop offset="100%" stop-color="#14172b"/>
+    </linearGradient>
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4cc9f0"/>
+      <stop offset="50%" stop-color="#7d6ce8"/>
+      <stop offset="100%" stop-color="#f72585"/>
+    </linearGradient>
+    <linearGradient id="pipeGrad1" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#4361ee"/>
+      <stop offset="100%" stop-color="#4cc9f0"/>
+    </linearGradient>
+    <linearGradient id="pipeGrad2" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#7209b7"/>
+      <stop offset="100%" stop-color="#7d6ce8"/>
+    </linearGradient>
+    <linearGradient id="pipeGrad3" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#b5179e"/>
+      <stop offset="100%" stop-color="#f72585"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bgGrad)" stroke="url(#borderGrad)" stroke-width="2.5"/>
+
+  <!-- Analytics / Arithmetic Flowing Pipe Bars -->
+  <!-- Bar 1 (Left, shorter) -->
+  <rect x="13" y="33" width="7" height="17" rx="3.5" fill="url(#pipeGrad1)"/>
+  
+  <!-- Bar 2 (Middle, medium) -->
+  <rect x="24" y="24" width="7" height="26" rx="3.5" fill="url(#pipeGrad2)"/>
+  
+  <!-- Bar 3 (Right, tall) -->
+  <rect x="35" y="16" width="7" height="34" rx="3.5" fill="url(#pipeGrad3)"/>
+
+  <!-- Connecting Pipeline Curve -->
+  <path d="M16.5 33 C 20 27, 28 20, 38.5 16" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2 3"/>
+
+  <!-- AI Sparkle Node at the peak -->
+  <g transform="translate(48, 18)" filter="url(#glow)">
+    <path d="M0 -7 Q0 0 7 0 Q0 0 0 7 Q0 0 -7 0 Q0 0 0 -7 Z" fill="#ffffff"/>
+    <circle cx="0" cy="0" r="1.5" fill="#4cc9f0"/>
+  </g>
+
+  <!-- Small Ambient Sparkle -->
+  <path d="M16 19 Q16 22 19 22 Q16 22 16 25 Q16 22 13 22 Q16 22 16 19 Z" fill="#f72585" opacity="0.8"/>
+</svg>

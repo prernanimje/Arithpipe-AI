@@ -28,12 +28,15 @@ router = APIRouter()
 
 async def generate_with_fallback(client, contents):
     # Priority list of models to try
-    # 1. Lite (Fastest/Newest) -> 2. Flash 2.5 (Standard) -> 3. Flash 1.5 (Legacy/Backup)
-    # The 'lite' model has a very low quota (20/day) so fallback is essential.
+    # 1. Gemini 2.5 Flash (Primary, fastest standard) -> 2. Gemini 2.5 Flash-Lite (Fast, lightweight)
+    # -> 3. Gemini 3.5 Flash -> 4. Gemini 3.5 Flash-Lite -> 5. Flash-Lite Latest -> 6. Flash Latest
     models = [
-        "gemini-2.0-flash-001", "gemini-flash-latest", "gemini-pro-latest",
-        "gemini-3-flash-preview", "gemini-2.5-flash-lite", 
-        "gemini-1.5-flash", "gemini-pro"
+        "gemini-2.5-flash",
+        "gemini-2.5-flash-lite",
+        "gemini-3.5-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-flash-lite-latest",
+        "gemini-flash-latest",
     ]
     last_error = None
     
@@ -68,7 +71,9 @@ async def generate_with_fallback(client, contents):
     
     # If all models fail
     print("DEBUG: All models failed.")
-    raise last_error
+    if last_error:
+        raise last_error
+    raise RuntimeError("All Gemini models failed to generate content.")
 
 @router.post("/ask/analyze_file")
 async def analyze_file(file: UploadFile = File(...), message: str = Form(""), user_id: Optional[str] = Form(None), session_id: Optional[str] = Form(None)):
@@ -423,17 +428,14 @@ async def ask_bot(payload: dict):
             print(f"DEBUG: Gemini API ERROR: {str(e)}")
             error_msg = str(e)
             
-            # If we already have chart_data from the file, we can still show that
             if "429" in error_msg or "RESOURCE_EXHAUSTED" in error_msg:
-                 wait_time = "30 seconds"
-                 match = re.search(r"retry in (\d+(\.\d+)?)s", error_msg)
-                 if match:
-                     wait_time = f"{int(float(match.group(1)) + 1)} seconds"
-                 analysis_text = f"⚠️ **AI Rate Limit Reached**: Please try again in {wait_time}."
-                 if chart_data:
-                     analysis_text += "\n\n(Showing basic chart from file data)"
+                wait_time = "30 seconds"
+                match = re.search(r"retry in (\d+(\.\d+)?)s", error_msg)
+                if match:
+                    wait_time = f"{int(float(match.group(1)) + 1)} seconds"
+                return {"answer": f"⚠️ **AI Rate Limit Reached**: Please try again in {wait_time}."}
             elif "404" in error_msg or "NOT_FOUND" in error_msg:
-                 return {"answer": "⚠️ **AI Model Error**: The requested AI model is not available. Please contact support."}
+                return {"answer": "⚠️ **AI Model Error**: The requested AI model is not available. Please contact support."}
             return {"answer": f"I encountered an error: {error_msg}"}
     else:
         print("DEBUG: Gemini Client is NOT initialized (API Key missing?)")

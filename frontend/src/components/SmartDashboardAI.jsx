@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE } from '../api/config';
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid, Legend } from 'recharts';
 import '../styles/SmartAI.css';
 import {
@@ -100,7 +101,7 @@ const SmartDashboardAI = ({ isFullPage = false, isMainSidebarOpen = false }) => 
 
     const fetchHistory = async (userId, shouldReset = false) => {
         try {
-            const res = await fetch(`http://127.0.0.1:8000/chat/history?user_id=${userId}`);
+            const res = await fetch(`${API_BASE}/chat/history?user_id=${userId}`);
             if (res.ok) {
                 const history = await res.json();
                 setChatHistory(history);
@@ -132,7 +133,7 @@ const SmartDashboardAI = ({ isFullPage = false, isMainSidebarOpen = false }) => 
             const user = JSON.parse(localStorage.getItem("user"));
             if (user?.id) {
                 try {
-                    const res = await fetch(`http://127.0.0.1:8000/chat/session/${chatId}?user_id=${user.id}`);
+                    const res = await fetch(`${API_BASE}/chat/session/${chatId}?user_id=${user.id}`);
                     if (res.ok) {
                         const data = await res.json();
                         setMessages(data.messages || []);
@@ -235,7 +236,7 @@ const SmartDashboardAI = ({ isFullPage = false, isMainSidebarOpen = false }) => 
                 if (currentUserId) formData.append("user_id", currentUserId);
                 if (currentChatId) formData.append("session_id", currentChatId);
 
-                const uploadRes = await fetch("http://127.0.0.1:8000/ask/analyze_file", {
+                const uploadRes = await fetch(`${API_BASE}/ask/analyze_file`, {
                     method: "POST",
                     body: formData
                 });
@@ -260,7 +261,7 @@ const SmartDashboardAI = ({ isFullPage = false, isMainSidebarOpen = false }) => 
             // B) TEXT ONLY (Start Context-Aware Chat)
             else if (currentInput) {
                 // Use /ask if we have data context, otherwise fallback to /chat
-                const endpoint = lastAnalyzedData ? "http://127.0.0.1:8000/ask" : "http://127.0.0.1:8000/chat";
+                const endpoint = lastAnalyzedData ? `${API_BASE}/ask` : `${API_BASE}/chat`;
 
                 // Construct Payload with History
                 let historyContext = [];

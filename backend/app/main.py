@@ -10,21 +10,41 @@ from app.routes.ask import router as ask_router
 from app.routes.upload import router as upload_router
 from app.routes.chat import router as chat_router
 from app.routes.stock import router as stock_router
+from app.db.database import init_all_tables
 
 load_dotenv(override=True)
 
-app = FastAPI()
+app = FastAPI(title="AI-Arithpipe API", version="1.0.0")
+
+# Startup database initialization
+@app.on_event("startup")
+def on_startup():
+    init_all_tables()
+
+# Health check endpoints for deployment platforms (Render, Railway, Fly, AWS)
+@app.get("/")
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "app": "AI-Arithpipe API", "version": "1.0.0"}
+
+# Production-ready CORS handling
+default_origins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:5175",
+    "http://localhost:5176",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "http://127.0.0.1:5175",
+    "http://127.0.0.1:5176",
+]
+env_origins = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()]
+origins = list(set(default_origins + env_origins))
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173",
-                   "http://localhost:5174",
-                   "http://localhost:5175",
-                   "http://localhost:5176",
-                   "http://127.0.0.1:5173",
-                   "http://127.0.0.1:5174",
-                   "http://127.0.0.1:5175",
-                   "http://127.0.0.1:5176"],
+    allow_origins=origins,
+    allow_origin_regex=os.getenv("ALLOWED_ORIGIN_REGEX", r"https?://.*"),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -58,9 +78,12 @@ import asyncio
 
 async def generate_with_fallback(client, contents):
     models = [
-        "gemini-2.0-flash-001", "gemini-flash-latest", "gemini-pro-latest",
-        "gemini-3-flash-preview", "gemini-2.5-flash-lite", 
-        "gemini-1.5-flash", "gemini-pro"
+        "gemini-2.5-flash",
+        "gemini-2.5-flash-lite",
+        "gemini-3.5-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-flash-lite-latest",
+        "gemini-flash-latest",
     ]
     last_error = None
     
@@ -79,7 +102,9 @@ async def generate_with_fallback(client, contents):
                      if attempt == 0: await asyncio.sleep(4); continue
                 if any(x in err_str for x in ["404", "NOT_FOUND", "503", "429", "RESOURCE_EXHAUSTED"]): break
                 raise e
-    raise last_error
+    if last_error:
+        raise last_error
+    raise RuntimeError("All Gemini models failed to generate content.")
 
 @app.post("/chat")
 async def chat_with_ai(request: ChatRequest):

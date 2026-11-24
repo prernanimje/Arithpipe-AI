@@ -155,8 +155,8 @@ async def upload_file(file: UploadFile = File(...)):
     cur = conn.cursor()
     try:
         cur.execute(
-            "INSERT INTO uploads (filename, file_data) VALUES (%s, %s) RETURNING id",
-            (filename, content),
+            "INSERT INTO uploads (filename, content_type, file_data) VALUES (%s, %s, %s) RETURNING id",
+            (filename, file_type, content),
         )
         file_id = cur.fetchone()[0]
         conn.commit()

@@ -5,36 +5,58 @@ const ParticleBackground = () => {
 
     useEffect(() => {
         const canvas = canvasRef.current;
+        if (!canvas) return;
         const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
         let animationFrameId;
+        let isRunning = true;
 
         let particles = [];
-        const particleCount = 60;
-        const connectionDistance = 150;
-        const mouse = { x: null, y: null, radius: 150 };
+        const isMobile = window.innerWidth < 768;
+        const particleCount = isMobile ? 22 : 55;
+        const connectionDistance = isMobile ? 85 : 140;
+        const mouse = { x: null, y: null, radius: isMobile ? 80 : 140 };
 
         const resizeCanvas = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
             init();
         };
 
-        window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('mousemove', (e) => {
+        const handleMouseMove = (e) => {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
-        });
+        };
+
+        const handleTouchMove = (e) => {
+            if (e.touches && e.touches[0]) {
+                mouse.x = e.touches[0].clientX;
+                mouse.y = e.touches[0].clientY;
+            }
+        };
+
+        const handleTouchEnd = () => {
+            mouse.x = null;
+            mouse.y = null;
+        };
+
+        window.addEventListener('resize', resizeCanvas, { passive: true });
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
+        window.addEventListener('touchmove', handleTouchMove, { passive: true });
+        window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 1;
-                this.speedX = (Math.random() * 0.8 - 0.4);
-                this.speedY = (Math.random() * 0.8 - 0.4);
-                // Ensure some minimum movement
-                if (Math.abs(this.speedX) < 0.1) this.speedX += 0.2;
-                if (Math.abs(this.speedY) < 0.1) this.speedY += 0.2;
+                this.size = Math.random() * 1.8 + 1;
+                this.speedX = (Math.random() * 0.6 - 0.3);
+                this.speedY = (Math.random() * 0.6 - 0.3);
+                if (Math.abs(this.speedX) < 0.1) this.speedX += 0.15;
+                if (Math.abs(this.speedY) < 0.1) this.speedY += 0.15;
                 this.color = Math.random() > 0.5 ? '#7d6ce8' : '#f72585';
             }
 
@@ -47,15 +69,16 @@ const ParticleBackground = () => {
                 if (this.y > canvas.height) this.y = 0;
                 else if (this.y < 0) this.y = canvas.height;
 
-                // Mouse interaction
-                const dx = mouse.x - this.x;
-                const dy = mouse.y - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < mouse.radius) {
-                    if (mouse.x < this.x && this.x < canvas.width - this.size * 10) this.x += 2;
-                    if (mouse.x > this.x && this.x > this.size * 10) this.x -= 2;
-                    if (mouse.y < this.y && this.y < canvas.height - this.size * 10) this.y += 2;
-                    if (mouse.y > this.y && this.y > this.size * 10) this.y -= 2;
+                // Touch / Mouse interaction
+                if (mouse.x !== null && mouse.y !== null) {
+                    const dx = mouse.x - this.x;
+                    const dy = mouse.y - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouse.radius) {
+                        const force = (mouse.radius - distance) / mouse.radius;
+                        this.x -= (dx / distance) * force * 3;
+                        this.y -= (dy / distance) * force * 3;
+                    }
                 }
             }
 
@@ -75,19 +98,22 @@ const ParticleBackground = () => {
         };
 
         const connect = () => {
-            for (let a = 0; a < particles.length; a++) {
-                for (let b = a; b < particles.length; b++) {
-                    const dx = particles[a].x - particles[b].x;
-                    const dy = particles[a].y - particles[b].y;
+            const len = particles.length;
+            for (let a = 0; a < len; a++) {
+                const pa = particles[a];
+                for (let b = a + 1; b < len; b++) {
+                    const pb = particles[b];
+                    const dx = pa.x - pb.x;
+                    const dy = pa.y - pb.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
 
                     if (distance < connectionDistance) {
-                        const opacity = 1 - distance / connectionDistance;
-                        ctx.strokeStyle = `rgba(125, 108, 232, ${opacity * 0.2})`;
+                        const opacity = (1 - distance / connectionDistance) * 0.22;
+                        ctx.strokeStyle = `rgba(125, 108, 232, ${opacity})`;
                         ctx.lineWidth = 1;
                         ctx.beginPath();
-                        ctx.moveTo(particles[a].x, particles[a].y);
-                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.moveTo(pa.x, pa.y);
+                        ctx.lineTo(pb.x, pb.y);
                         ctx.stroke();
                     }
                 }
@@ -95,20 +121,37 @@ const ParticleBackground = () => {
         };
 
         const animate = () => {
+            if (!isRunning) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
             connect();
             animationFrameId = requestAnimationFrame(animate);
         };
+
+        // Battery saver: pause animation when page is hidden
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                cancelAnimationFrame(animationFrameId);
+            } else {
+                animationFrameId = requestAnimationFrame(animate);
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         resizeCanvas();
         animate();
 
         return () => {
+            isRunning = false;
             window.removeEventListener('resize', resizeCanvas);
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
             cancelAnimationFrame(animationFrameId);
         };
     }, []);

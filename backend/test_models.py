@@ -2,28 +2,28 @@ import os
 from dotenv import load_dotenv
 from google import genai
 
-load_dotenv()
+load_dotenv(override=True)
 api_key = os.getenv("GEMINI_API_KEY")
 if api_key:
     api_key = api_key.strip().strip('"').strip("'")
+client = genai.Client(api_key=api_key)
 
-print(f"Checking models with key: {api_key[:5]}...")
+test_list = [
+    "gemini-2.5-flash",
+    "gemini-flash-latest",
+    "gemini-2.5-flash-lite",
+    "gemini-flash-lite-latest",
+    "gemini-3-flash-preview",
+    "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-pro-latest",
+    "gemini-2.5-pro",
+    "gemini-3.1-flash-lite",
+]
 
-try:
-    client = genai.Client(api_key=api_key)
-    # The SDK might have a different way to list models depending on version.
-    # Trying the standard V1 way or the new client way.
-    # For google-genai library (not google-generativeai):
-    
-    print("Attempting to list models...")
-    # Based on recent SDK usages:
+for m in test_list:
     try:
-        # Pager object
-        pager = client.models.list() 
-        for model in pager:
-            print(f"Model: {model.name} | Supported methods: {model.supported_generation_methods}")
+        res = client.models.generate_content(model=m, contents="Reply with 'OK'")
+        print(f"PASS: {m} -> {res.text.strip()[:20]}")
     except Exception as e:
-        print(f"Error listing with client.models.list(): {e}")
-
-except Exception as e:
-    print(f"Fatal error: {e}")
+        print(f"FAIL: {m} -> {str(e)[:70]}")

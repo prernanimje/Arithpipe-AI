@@ -81,11 +81,19 @@ body.dark-mode {
     background-color: transparent !important;
 }
 
+html,
 body {
     background-color: var(--bg-primary);
     margin: 0;
     padding: 0;
+    width: 100%;
+    max-width: 100vw;
     overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
 /* Glassmorphism for standalone headers */

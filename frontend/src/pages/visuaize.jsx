@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { API_BASE } from "../api/config";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart,
@@ -142,7 +143,7 @@ const Visuaize = ({ onChartSelect }) => {
       navigate("/");
     }
     if (fileId) {
-      fetch(`http://localhost:8000/upload/${fileId}`)
+      fetch(`${API_BASE}/upload/${fileId}`)
         .then(res => res.json())
         .then(d => setFilename(d.filename))
         .catch(err => console.error("Failed to fetch filename:", err));

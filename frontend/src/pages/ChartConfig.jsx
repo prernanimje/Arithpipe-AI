@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { API_BASE } from "../api/config";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useRef } from "react";
@@ -203,7 +204,7 @@ const ChartConfig = ({ data: propData, chartType: propChartType, onBack }) => {
     setColumnsLoading(true);
 
     // Fetch column names
-    fetch(`http://localhost:8000/upload/${fileId}/columns`)
+    fetch(`${API_BASE}/upload/${fileId}/columns`)
       .then(res => res.json())
       .then(data => {
         if (data.columns && data.columns.length > 0) {
@@ -214,7 +215,7 @@ const ChartConfig = ({ data: propData, chartType: propChartType, onBack }) => {
       .finally(() => setColumnsLoading(false));
 
     // Fetch full row data from DB (Sampled for big data performance)
-    fetch(`http://localhost:8000/upload/${fileId}/rows?sample=true`)
+    fetch(`${API_BASE}/upload/${fileId}/rows?sample=true`)
       .then(res => res.json())
       .then(data => {
         if (data.rows) {
@@ -246,7 +247,7 @@ const ChartConfig = ({ data: propData, chartType: propChartType, onBack }) => {
     setAiQuery("");
 
     try {
-      const response = await fetch("http://localhost:8000/chat", {
+      const response = await fetch(`${API_BASE}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: fullMessage })

@@ -4,15 +4,13 @@ import "../styles/Landing.css";
 import { API_BASE } from "../api/config";
 import { useNavigate } from "react-router-dom";
 
-
-const Login = ({ onClose }) => {
-  const navigate = useNavigate();  // 👈 ADD THIS
+const Login = ({ onClose, onSuccess }) => {
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,10 +30,16 @@ const Login = ({ onClose }) => {
         setError(data.detail || "Login failed");
       } else {
         localStorage.setItem("user", JSON.stringify(data));
+        sessionStorage.setItem("user", JSON.stringify(data));
+        if (onSuccess) {
+          onSuccess(data);
+        }
         onClose();
-        navigate("/finbro-dashboard");  // 👈 REDIRECT HERE
-
-
+        if (data.is_first_login) {
+          navigate("/", { state: { firstLogin: true } });
+        } else {
+          navigate("/finbro-dashboard");
+        }
       }
     } catch {
       setError("Network error");
@@ -54,7 +58,7 @@ const Login = ({ onClose }) => {
           ×
         </button>
 
-        <h3>Log in</h3>
+        <h3>Log in to AI-Arithpipe</h3>
 
         <form onSubmit={handleSubmit}>
           <label>Email

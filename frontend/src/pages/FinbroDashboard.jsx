@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/FinbroDashboard.css';
 import '../styles/plusmenu.css'; // Ensure plusmenu styles are available if we use similar class names
 import { useTheme } from '../context/ThemeContext';
+import { API_BASE } from '../api/config';
 import Visualization from '../pages/visuaize.jsx';
 import Landing from '../pages/Landing.jsx';
 import Charts from '../pages/ChartConfig.jsx';
@@ -72,12 +73,12 @@ const TimeCard = ({ style }) => {
   return (
     <section className="finbro-card time-card-container" style={{
       width: '100%',
-      minWidth: '290px',
+      minWidth: '0',
       background: '#111',
       color: 'white',
       display: 'flex',
       flexDirection: 'row',
-      gap: '20px',
+      gap: '16px',
 
       alignItems: 'center',
       borderRadius: '24px',
@@ -101,7 +102,7 @@ const TimeCard = ({ style }) => {
       }} />
 
       {/* Analog Clock */}
-      <div style={{ width: '120px', height: '120px', position: 'relative', zIndex: 1 }}>
+      <div style={{ width: '96px', height: '96px', flexShrink: 0, position: 'relative', zIndex: 1 }}>
         <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
           {/* Clock Face */}
           <circle cx="50" cy="50" r="48" fill="rgba(255,255,255,0.03)" stroke="#333" strokeWidth="1.5" />
@@ -190,7 +191,7 @@ const StockMarketSlider = ({ style, className = "" }) => {
 
   const fetchLiveStockData = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/stocks?symbols=AAPL,BTC-USD,TSLA,GOOGL");
+      const res = await fetch(`${API_BASE}/api/stocks?symbols=AAPL,BTC-USD,TSLA,GOOGL`);
       if (res.ok) {
         const data = await res.json();
         const formatted = data.map(item => ({
@@ -404,7 +405,7 @@ const LiveStockTable = () => {
 
   const fetchLiveStockTableData = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/stocks?symbols=AAPL,TSLA,GOOGL,MSFT,AMZN");
+      const res = await fetch(`${API_BASE}/api/stocks?symbols=AAPL,TSLA,GOOGL,MSFT,AMZN`);
       if (res.ok) {
         const data = await res.json();
         const formatted = data.map(item => {
@@ -439,7 +440,7 @@ const LiveStockTable = () => {
           Live Updates
         </div>
       </div>
-      <div style={{ overflowX: 'auto', flex: 1 }}>
+      <div className="sales-table-wrapper" style={{ overflowX: 'auto', flex: 1, width: '100%' }}>
         <table className="sales-table">
           <thead>
             <tr>
@@ -509,7 +510,7 @@ const FinbroDashboard = () => {
 
   const fetchHistory = async (userId) => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/chat/history?user_id=${userId}`);
+      const res = await fetch(`${API_BASE}/chat/history?user_id=${userId}`);
       if (res.ok) {
         const history = await res.json();
         setUserHistory(history);
@@ -519,6 +520,19 @@ const FinbroDashboard = () => {
     }
   };
   const [isSidebarHidden, setIsSidebarHidden] = useState(true);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
+  );
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const [activeSection, setActiveSection] = useState("dashboard"); // dashboard, visualize, charts, ai
 
   // Chart Config State when navigating within SPA
@@ -634,7 +648,7 @@ const FinbroDashboard = () => {
     setAiQuery("");
 
     try {
-      const response = await fetch("http://localhost:8000/chat", {
+      const response = await fetch(`${API_BASE}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: fullMessage })
@@ -658,9 +672,9 @@ const FinbroDashboard = () => {
     navigate("/");
   }
 
-  // PRERNA click handler
-  const handlePrernaClick = () => {
-    setIsSidebarHidden(false);
+  // Logo toggle handler
+  const handleLogoClick = () => {
+    setIsSidebarHidden(prev => !prev);
   };
 
   // Upload Logic
@@ -675,7 +689,7 @@ const FinbroDashboard = () => {
     formData.append("file", file);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/upload", {
+      const res = await fetch(`${API_BASE}/upload`, {
         method: "POST",
         body: formData,
       });
@@ -753,22 +767,24 @@ const FinbroDashboard = () => {
         };
 
         const leftVariants = {
-          hidden: { opacity: 0, x: -70, filter: 'blur(10px)' },
+          hidden: { opacity: 0, x: isMobile ? 0 : -70, y: isMobile ? 15 : 0, filter: isMobile ? 'none' : 'blur(10px)' },
           show: {
             opacity: 1,
             x: 0,
-            filter: 'blur(0px)',
-            transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+            y: 0,
+            filter: 'none',
+            transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
           }
         };
 
         const rightVariants = {
-          hidden: { opacity: 0, x: 70, filter: 'blur(10px)' },
+          hidden: { opacity: 0, x: isMobile ? 0 : 70, y: isMobile ? 15 : 0, filter: isMobile ? 'none' : 'blur(10px)' },
           show: {
             opacity: 1,
             x: 0,
-            filter: 'blur(0px)',
-            transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+            y: 0,
+            filter: 'none',
+            transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
           }
         };
         const yColumns = (() => {
@@ -1004,23 +1020,63 @@ const FinbroDashboard = () => {
     }
   };
 
+  const handleSectionSelect = (section) => {
+    setActiveSection(section);
+    if (isMobile) {
+      setIsSidebarHidden(true);
+    }
+  };
+
   return (
     <div className="finbro-dashboard-container">
+      {/* Mobile Top Navigation Bar */}
+      <div className="finbro-mobile-bar">
+        <button
+          className="finbro-mobile-menu-btn"
+          onClick={() => setIsSidebarHidden(prev => !prev)}
+          aria-label="Toggle Menu"
+        >
+          <LayoutDashboard size={20} />
+        </button>
+        <div className="finbro-mobile-logo" onClick={() => navigate("/")}>
+          Arithpipe AI
+        </div>
+        <div className="finbro-mobile-actions">
+          <button
+            className="finbro-theme-btn"
+            onClick={toggleTheme}
+            aria-label="Toggle Theme"
+            style={{ width: '36px', height: '36px' }}
+          >
+            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Backdrop overlay for mobile drawer */}
+      {!isSidebarHidden && isMobile && (
+        <div
+          className="finbro-sidebar-backdrop"
+          onClick={() => setIsSidebarHidden(true)}
+        />
+      )}
+
       {/* Sidebar */}
       <aside className={`finbro-sidebar ${isSidebarHidden ? "collapsed" : ""}`}>
         <div
           className="finbro-logo"
-          onClick={handlePrernaClick}
+          onClick={handleLogoClick}
           onDoubleClick={() => navigate("/")}
           style={{ cursor: "pointer", transition: 'all 0.3s' }}
+          title={isSidebarHidden ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {isSidebarHidden ? "P" : "PRERNA"}
+          {isSidebarHidden ? "AI" : "Arithpipe AI"}
         </div>
 
         <nav className="finbro-nav-menu">
           <button
             className={`finbro-nav-item ${activeSection === "home" ? "active" : ""}`}
-            onClick={() => setActiveSection("home")}
+            onClick={() => handleSectionSelect("home")}
             title="Home"
           >
             <span className="sidebar-icon-wrapper">
@@ -1031,7 +1087,7 @@ const FinbroDashboard = () => {
 
           <button
             className={`finbro-nav-item ${activeSection === "dashboard" ? "active" : ""}`}
-            onClick={() => setActiveSection("dashboard")}
+            onClick={() => handleSectionSelect("dashboard")}
             title="Dashboard"
           >
             <span className="sidebar-icon-wrapper">
@@ -1042,7 +1098,7 @@ const FinbroDashboard = () => {
 
           <button
             className={`finbro-nav-item ${activeSection === "visualize" ? "active" : ""}`}
-            onClick={() => setActiveSection("visualize")}
+            onClick={() => handleSectionSelect("visualize")}
             title="Visualization"
           >
             <span className="sidebar-icon-wrapper">
@@ -1053,7 +1109,7 @@ const FinbroDashboard = () => {
 
           <button
             className={`finbro-nav-item ${activeSection === "charts" ? "active" : ""}`}
-            onClick={() => setActiveSection("charts")}
+            onClick={() => handleSectionSelect("charts")}
             title="Charts"
           >
             <span className="sidebar-icon-wrapper">
@@ -1064,7 +1120,7 @@ const FinbroDashboard = () => {
 
           <button
             className={`finbro-nav-item ${activeSection === "ai" ? "active" : ""}`}
-            onClick={() => setActiveSection("ai")}
+            onClick={() => handleSectionSelect("ai")}
             title="AI Assistant"
           >
             <span className="sidebar-icon-wrapper">
@@ -1112,7 +1168,7 @@ const FinbroDashboard = () => {
                   <button className="finbro-dropdown-item" onClick={handleSwitchAccount}>
                     <SwitchCamera size={18} /> Switch Account
                   </button>
-                  <button className="finbro-dropdown-item" onClick={() => setActiveSection("settings")}>
+                  <button className="finbro-dropdown-item" onClick={() => handleSectionSelect("settings")}>
                     <Settings size={18} /> Settings
                   </button>
                   <button className="finbro-dropdown-item">

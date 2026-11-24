@@ -1,7 +1,8 @@
 fastapi
-uvicorn
+uvicorn[standard]
 psycopg2-binary
 python-dotenv
+bcrypt
 passlib[bcrypt]
 google-genai
 python-multipart
